@@ -1,18 +1,35 @@
-var request = require('request');
-var cheerio = require('cheerio');
-var URL = require('url-parse');
+const puppeteer = require('puppeteer')
+const fs = require('fs')
+let games = []
 
-var pageToVisit = "https://www.goclecd.fr/";
-console.log("Visiting page " + pageToVisit);
-request(pageToVisit, function(error, response, body) {
-    if(error) {
-        console.log("Error: " + error);
+void (async () => {
+    try {
+        const browser = await puppeteer.launch()
+        const page = await browser.newPage()
+        await page.goto('https://www.goclecd.fr/acheter-cod-black-ops-cold-war-cle-cd-comparateur-prix/')
+        const collectData = await page.evaluate(() => {
+            const grabData = (row, target) => row
+                .querySelector(`div.${target}`)
+
+            const DEALER_ROW = 'div.offers-table-row'
+
+            const data = []
+
+            const dealRow = document.querySelectorAll(DEALER_ROW)
+
+            for (const mark of dealRow){
+                data.push({
+                    name: grabData(mark, 'offers-merchant'),
+                    price: grabData(mark, 'x-offer-price')
+                })
+            }
+            return data
+        })
+        console.log(JSON.stringify(collectData, null, 2))
+        await browser.close()
+        /*const jsonResult = JSON.stringify(collectData, null, 2)
+        await fs.promises.writeFile('result.json', jsonResult)*/
+    } catch (error) {
+        console.log(error)
     }
-    // Check status code (200 is HTTP OK)
-    console.log("Status code: " + response.statusCode); //a retirer
-    if(response.statusCode === 200) {
-        // Parse the document body
-        var $ = cheerio.load(body);
-        console.log("Page title:  " + $('title').text());
-    }
-});
+})()
