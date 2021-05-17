@@ -8,14 +8,14 @@ void (async () => {
     try {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-        await page.goto('https://www.goclecd.fr/catalogue/search-call+of+duty+cold+war/');
-        /*await page.waitFor(1000);
-        await page.click('');
+        await page.goto('https://www.goclecd.fr/');
+        await page.waitFor(1000);
+        await page.click('.banner-search-form');
         await page.waitFor(1000);
         await page.type('input.banner-search-form-input', game);
         await page.waitFor(1000);
-        await page.click('.banner-search-form-submit');
-        await page.waitFor(1000);*/
+        await page.keyboard.press('Enter');
+        await page.waitFor(1000);
         await page.click('.search-results-row-link');
         await page.waitFor(1000);
 
